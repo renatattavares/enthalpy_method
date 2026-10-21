@@ -1,15 +1,30 @@
 #include "..\Headers\Include.h"
 
-void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, int* ee, int* nn, int* ss, int* R, double* kx, double* ky, double* rho, double* cp, double* L, int* batt_pos, string dir) {
+void plot_mesh(int o, int Nx, int Ny, double time, double dx, double dy, int* pp, int* ww, int* ee, int* nn, int* ss, int* R, double* kx, double* ky, double* rho, double* cp, double* L, int* batt_pos, string dir) {
 
 	double rx{}, ry{};
+	struct stat sb;
+	string iteration = to_string(int(time));
+	string filename;
+	string simulation_folder = dir + "\\" + "Mesh";
+
+	// Create Results Folder if it does not exist
+	if (stat(simulation_folder.c_str(), &sb) != 0)
+	{
+		if (_mkdir(simulation_folder.c_str()) != 0)
+		{
+			cout << "Failed to create folder " << simulation_folder << endl;
+		}
+	}
+	
+	// Create filename
+	filename = simulation_folder + "\\" + "MeshPlots" + "_" + iteration + ".vtk";
 
 	cout << "\n_________________________________________________________________________" << endl;
 	cout << "\nWriting data files..." << endl;
-
+	
 	// Build
 	ofstream fout;
-	string filename = dir + "/Properties.vtk";
 	fout.open(filename);
 	fout << "# vtk DataFile Version 2.0" << endl;
 	fout << "Physical Properties plot" << endl;
@@ -53,7 +68,7 @@ void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, in
 		fout << pp[a] << endl;
 	}
 
-	// Write WWs
+	// Write PPs
 	fout << "SCALARS ww int" << endl;
 	fout << "LOOKUP_TABLE ww" << endl;
 
@@ -62,7 +77,7 @@ void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, in
 		fout << ww[pp[a]] << endl;
 	}
 
-	// Write EEs
+	// Write PPs
 	fout << "SCALARS ee int" << endl;
 	fout << "LOOKUP_TABLE ee" << endl;
 
@@ -71,7 +86,7 @@ void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, in
 		fout << ee[pp[a]] << endl;
 	}
 
-	// Write NNs
+	// Write PPs
 	fout << "SCALARS nn int" << endl;
 	fout << "LOOKUP_TABLE nn" << endl;
 
@@ -80,7 +95,7 @@ void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, in
 		fout << nn[pp[a]] << endl;
 	}
 
-	// Write SSs
+	// Write PPs
 	fout << "SCALARS ss int" << endl;
 	fout << "LOOKUP_TABLE ss" << endl;
 
@@ -284,7 +299,7 @@ void plot_coef(int o, int Nx, int Ny, double dx, double dy, int* pp, double* aw,
 
 }
 
-void plot_sim(int o, int Nx, int Ny, double dx, double dy, int* pp, double* T, double* f, int* R, double time, string results_folder) {
+void plot_sim(int o, int Nx, int Ny, double dx, double dy, int* pp, double* T, double* f, double time, string results_folder) {
 
 	double rx{}, ry{};
 	struct stat sb;
@@ -360,15 +375,6 @@ void plot_sim(int o, int Nx, int Ny, double dx, double dy, int* pp, double* T, d
 		fout << f[pp[a]] << endl;
 	}
 
-	// Write Region Information
-	fout << "SCALARS Region int" << endl;
-	fout << "LOOKUP_TABLE Region" << endl;
-
-	for (int a = 0; a < o; a++)
-	{
-		fout << R[pp[a]] << endl;
-	}
-
 	// Exit
 	fout.close();
 	cout << "\nDone." << endl << endl;
@@ -376,8 +382,8 @@ void plot_sim(int o, int Nx, int Ny, double dx, double dy, int* pp, double* T, d
 	return;
 }
 
-string create_results_folder() 
-{
+string create_results_folder() {
+
 	// Get the current time
 	time_t t = time(nullptr);
 	tm* now = localtime(&t);
@@ -410,8 +416,7 @@ string create_results_folder()
 	return results_folder;
 }
 
-void plot_log(double time, int o, int* pp, int* R, double* T, double* f, double SOC, string results_folder) 
-{
+void log(double time, int o, int* pp, int* R, double* T, double* f, string results_folder) {
 
 	double delta_temp = 0.0;
 	double max_temp = 0.0;
@@ -430,43 +435,32 @@ void plot_log(double time, int o, int* pp, int* R, double* T, double* f, double 
 	for (int i = 0; i < o; i++)
 	{
 		l = pp[i];
-		if (l != 0)
+		if (T[l] > max_temp && R[l] == 1)
 		{
-			if (T[l] > max_temp && R[l] == 1)
+			max_temp = T[l];
+		}
+		if (T[l] < min_temp && R[l] == 1)
+		{
+			min_temp = T[l];
+		}
+		if (R[l] == 0 || R[l] == 5)
+		{
+			total_f = total_f + f[l];
+			tmed_pcm = tmed_pcm + T[l];
+			can_melt++;
+			if (T[l] > tmax_pcm)
 			{
-				max_temp = T[l];
-			}
-			if (T[l] < min_temp && R[l] == 1)
-			{
-				min_temp = T[l];
-			}
-			if (R[l] == 0 || R[l] == 5)
-			{
-				total_f = total_f + f[l];
-				tmed_pcm = tmed_pcm + T[l];
-				can_melt++;
-				if (T[l] > tmax_pcm)
-				{
-					tmax_pcm = T[l];
-				}
+				tmax_pcm = T[l];
 			}
 		}
 	}
 
 	delta_temp = max_temp - min_temp;
-	if (can_melt != 0)
-	{
-		total_f = total_f / can_melt;
-		tmed_pcm = tmed_pcm / can_melt;
-	}
-	else
-	{
-		total_f = 0.0;
-		tmed_pcm = 0.0;
-	}
-		fout.open(filename, std::ios_base::app);
+	total_f = total_f / can_melt;
+	tmed_pcm = tmed_pcm / can_melt;
 
-	fout << time << '\t' << max_temp << '\t' << min_temp << '\t' << delta_temp << '\t' << total_f << '\t' << tmax_pcm << '\t' << tmed_pcm << '\t' << SOC << endl;
+	fout.open(filename, std::ios_base::app);
+	fout << time << '\t' << max_temp << '\t' << min_temp << '\t' << delta_temp << '\t' << total_f << '\t' << tmax_pcm << '\t' << tmed_pcm << endl;
 	fout.close();
 
 	//cout << "Max temperature:" << max_temp << endl;
@@ -552,31 +546,78 @@ void plot_res(int o, int Nx, int Ny, double dx, double dy, int* pp, double* P, i
 	return;
 }
 
-void plot_qdot(double time, double SOC, double it, vector<double> variable_q_dots, vector<double> T_ave_cell, string results_folder)
-{	
+void log_plot(double time, int o, int* pp, int* R, double* T, double* f) {
+
+	double delta_temp = 0.0;
+	double max_temp = 0.0;
+	double min_temp = 1000.0;
+	double total_f = 0.0;
+	int can_melt = 0;
+	int l = 0;
+
+	for (int i = 0; i < o; i++)
+	{
+		l = pp[i];
+		if (T[l] > max_temp && R[l] == 1)
+		{
+			max_temp = T[l];
+		}
+		if (R[l] == 0 || R[l] == 5)
+		{
+			total_f = total_f + f[l];
+			can_melt++;
+		}
+	}
+
+	total_f = total_f / can_melt;
+
+	cout << "Max temperature:" << max_temp << endl;
+	cout << "Liquid Fraction:" << total_f << endl;
+
+}
+
+void log_res(double time, int o, int* pp, int* R, double* T, double* f, string results_folder) {
+
+	double delta_temp = 0.0;
+	double max_temp = 0.0;
+	double min_temp = 1000.0;
+	double total_f = 0.0;
+	int can_melt = 0;
 	int l = 0;
 
 	// Log file
 	ofstream fout;
 	string filename;
-	filename = results_folder + "/log_qdot.dat";
+	filename = results_folder + "/Log_Residue.dat";
+
+	for (int i = 0; i < o; i++)
+	{
+		l = pp[i];
+		if (T[l] > max_temp && R[l] == 1)
+		{
+			max_temp = T[l];
+		}
+		if (T[l] < min_temp && R[l] == 1)
+		{
+			min_temp = T[l];
+		}
+		if (R[l] == 0 || R[l] == 5)
+		{
+			total_f = total_f + f[l];
+			can_melt++;
+		}
+	}
+
+	delta_temp = max_temp - min_temp;
+	total_f = total_f / can_melt;
 
 	fout.open(filename, std::ios_base::app);
-
-	int X = variable_q_dots.size();
-
-	fout << time << '\t' << it << '\t' << SOC << '\t';
-
-	for (int i = 0; i < X; i++) 
-	{
-		fout << T_ave_cell[i] << '\t';
-	}
-
-	for (int i = 0; i < X; i++)
-	{
-		fout << variable_q_dots[i] << '\t';
-	}
-
-	fout << endl;
+	fout << time << '\t' << max_temp << '\t' << min_temp << '\t' << delta_temp << '\t' << total_f << endl;
 	fout.close();
+
+	//cout << "Max temperature:" << max_temp << endl;
+	//cout << "Min temperature:" << min_temp << endl;
+	//cout << "Delta temperature:" << delta_temp << endl;
+	//cout << "Liquid Fraction:" << total_f << endl;
+
 }

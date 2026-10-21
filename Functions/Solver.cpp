@@ -7,7 +7,7 @@ void SORt(int o, int* pp, int* ww, int* ee, int* nn, int* ss, double* ap, double
 	double R, T_old;
 	double res = 1.0;
 	double kappa = 1000;
-	double resmax = 1E-7;
+	double resmax = 1E-6;
 
 	while (res > resmax)
 	{
@@ -116,7 +116,7 @@ void SIP(int o, int N, int* pp, int* nn, int* ss, int* ee, int* ww, double* ap, 
 		res_plot[m] = (double)0.0;
 	}
 
-	//Alocação dos coeficientes
+	//Alocaï¿½ï¿½o dos coeficientes
 	for (m = 0; m < o; m++)
 	{
 		if (pp[m] != 0)

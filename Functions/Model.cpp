@@ -98,11 +98,10 @@ void map_mesh(int type, int o, int Nx, int Ny, double dx, double dy, double D, d
 	}
 	else if (type == 3 || type == 4) // Battery module
 	{
-
 		if (type == 3)
 		{
-			lines_batt_mod = 8;
-			cols_batt_mod = 1;
+			cols_batt_mod = 8;
+			lines_batt_mod = 1;
 		}
 
 		int i, j, a, b, c, m, z;
@@ -266,10 +265,11 @@ void map_mesh(int type, int o, int Nx, int Ny, double dx, double dy, double D, d
 	cout << "\nMap time: " << time_taken << " s " << endl;
 }
 
-void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, int* ww, int* ee, int* nn, int* ss, double* kx, double* ky, double* ap, double* aw, double* ae, double* an, double* as, double* su, double* sp, double* b, double Tw, double Te, double Tn, double Ts, double qw, double qe, double qn, double qs, double* T, double* Ti, double* rho, double* cp, double* L, double* f, double* fi, int* R, double Q, double dt, double h_cp, double T_cp, double h_air, double T_air, double w, bool cooling_active, double* T_fluid, double q_dot, int* batt_pos, bool tr_started, int tr_cell, double tr_q_dot, double tr_time, double tr_duration, vector<double> cell_heat_dissipation)
+void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, int* ww, int* ee, int* nn, int* ss, double* kx, double* ky, double* ap, double* aw, double* ae, double* an, double* as, double* su, double* sp, double* b, double Tw, double Te, double Tn, double Ts, double qw, double qe, double qn, double qs, double* T, double* Ti, double* rho, double* cp, double* L, double* f, double* fi, int* R, double Q, double dt, double h_cp, double T_cp, double h_air, double T_air, double w, bool active, double* T_fluid) 
 {
-	int i, j, m, l;
 
+	int i, j, m, l;
+		
 	#pragma omp parallel for shared (ap, b) private (l, i, j)
 	for (m = 0; m < o; m++) 
 	{
@@ -289,75 +289,39 @@ void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, in
 		// Boundary conditions - West
 		if (i == 1)
 		{
-			if (type == 1 || type == 2 || type == 3 || type == 4)
-			{
-				su[l] = su[l] + (h_air * T_air) / dx;
-				sp[l] = sp[l] - (h_air) / dx;
-			}
+			aw[l] = 0;
+			su[l] = su[l] + (h_air * T_air) / dx;
+			sp[l] = sp[l] - (h_air) / dx;
 		}
 		else if (i == Nx) // Boundary conditions - East
 		{
-			if (type == 1 || type == 2 || type == 3 || type == 4)
-			{
-				su[l] = su[l] + (h_air * T_air) / dx;
-				sp[l] = sp[l] - (h_air) / dx;
-			}
+			ae[l] = 0;
+			su[l] = su[l] + (h_air * T_air) / dx;
+			sp[l] = sp[l] - (h_air) / dx;
 		}
 
 		// Boundary conditions - North
 		if (j == Ny)
 		{
-			if (type == 1 || type == 2 || type == 3 || type == 4)
-			{
-				su[l] = su[l] + (h_air * T_air) / dy;
-				sp[l] = sp[l] - (h_air) / dy;
-			}
+			an[l] = 0;
+			su[l] = su[l] + (h_air * T_air) / dy;
+			sp[l] = sp[l] - (h_air) / dy;
+
 		}
 		else if (j == 1) // Boundary conditions - South
 		{
-			if (type == 1)
+			as[l] = 0;
+			if ((type == 3 && active == true) || (type == 2))
 			{
-				as[l] = 0.0;
-			}
-			else if (type == 2)
-			{
-				su[l] = su[l] + (h_cp * T_cp) / dy;
-				sp[l] = sp[l] - (h_cp) / dy;
-			}
-			else if (type == 3 && cooling_active == true)
-			{
-				su[l] = su[l] + (h_cp * T_cp) / dy;
-				sp[l] = sp[l] - (h_cp) / dy;
-			}
-			else if ((type == 4 || type == 5) && cooling_active == true)
-			{
-  				su[l] = su[l] + (h_cp * T_fluid[l]) / dy;
-				sp[l] = sp[l] - (h_cp) / dy;
+				su[l] = su[l] + (h_cp * 0.12 * T_fluid[l]) / dy; //su[l] = su[l] + (h_cp * T_cp) / dy;
+				sp[l] = sp[l] - (h_cp * 0.12) / dy;
 			}
 		}
 
 		//Boundary conditions - Source term
-		if (type == 1 || type == 2 || type == 3)
+		if (R[l] == 1)
 		{
-			if (R[l] == 1)
-			{
-				su[l] = su[l] + Q;
-			}
-		}
-		else if (type == 4 || type == 5)
-		{ 
-			if (R[l] == 1)
-			{
-				if (tr_started == true && batt_pos[l] == tr_cell)
-				{
-					su[l] = su[l] + tr_q_dot;
-					//printf("Thermal runaway with %5.2f W/m3 of heat source\n", q_dot_tr);
-				}
-				else
-				{
-					su[l] = su[l] + cell_heat_dissipation[batt_pos[l] - 1];
-				}
-			}
+			su[l] = su[l] + Q;
 		}
 
 		//Calculo do ap e do b
@@ -367,79 +331,10 @@ void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, in
 	}
 }
 
-void fluid_temp(int o, int* pp, int N, int Ny, double* T, int* batt_pos, double* T_fluid, double T_cp, double h_cp, double m_dot, double t, double w, double cp_liq, int cols_batt_mod)
-{
-	int i, j, m, l, pos;
-	vector<double> Tave(cols_batt_mod);
-	vector<int> num_cells(cols_batt_mod);
-	vector<double> Tcorner(cols_batt_mod+1);
-
-	// Simulation timer
-	clock_t start, end;
-	start = clock();		// Start timer!
-
-	for (i = 0; i < cols_batt_mod; i++)
-	{
-		Tave[i] = 0.0;
-		num_cells[i] = 0;
-	}
-
-	#pragma omp parallel for shared (Tave, num_cells) private (l, i, j)
-	for (m = 0; m < o; m++)
-	{
-		l = pp[m];
-		i = (int)l / (Ny + 2);
-		j = (int)l - i * (Ny + 2);
-
-		if (j == 1) // Boundary conditions - South
-		{
-			Tave[batt_pos[l]-1] = Tave[batt_pos[l] - 1] + T[l];
-			num_cells[batt_pos[l] - 1] = num_cells[batt_pos[l] - 1] + 1;
-			//printf("pp = %i \t Batt Pos = %i\t Tave = %5.E\t num_cells = %i\n", l, batt_pos[l], Tave[batt_pos[l] - 1], num_cells[batt_pos[l] - 1]);
-		}
-	}
-
-	for (i = 0; i < cols_batt_mod; i++)
-	{
-		Tave[i] = Tave[i] / num_cells[i];
-		//printf("Batt cell = %i \t Tave = %5.3f\n", i, Tave[i]);
-	}
-
-	for (i = 0; i < (cols_batt_mod+1); i++)
-	{
-		if (i == 0)
-		{
-			Tcorner[i] = T_cp;
-		}
-		else
-		{
-			Tcorner[i] = Tcorner[i - 1] + (((h_cp * t * w) / (m_dot * cp_liq)) * (Tave[i-1] - Tcorner[i - 1]));
-		}
-		//printf("i = %i\t Tcorner = %5.3f\n", i, Tcorner[i]);
-	}
-
-	#pragma omp parallel for shared (T_fluid) private (l, i, j)
-	for (m = 0; m < o; m++)
-	{
-		l = pp[m];
-		i = (int)l / (Ny + 2);
-		j = (int)l - i * (Ny + 2);
-
-		if (j == 1) // Boundary conditions - South
-		{
-			pos = batt_pos[l];
-			T_fluid[l] = (Tcorner[pos - 1] + Tcorner[pos]) / 2;
-			//printf("i = %i\t Tfluid = %5.3f\n", i, Tcorner[i]);
-		}
-	}
-	end = clock(); // Stop timer!
-	double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-	//cout << "\nFluid cauculus time: " << time_taken << " s " << endl;
-}
 
 void set_mesh_problem(int type, int& N, int& Nx, int& Ny, double& Lx, double& Ly,
-	double dx, double dy, double t, double l, double t_fin, double t_pcm, int lines_batt_mod, int cols_batt_mod) 
-{
+	double dx, double dy, double t, double l, double t_fin, double t_pcm) {
+
 	if (type == 1)
 	{
 		Lx = 0.05;			// Mesh size in x direcition [m] 
@@ -449,8 +344,8 @@ void set_mesh_problem(int type, int& N, int& Nx, int& Ny, double& Lx, double& Ly
 	{	
 		int batts = 8;
 		int fins = 9;
-		Lx = batts * t + fins * t_fin;	// Mesh size in x direcition [m] 
-		Ly = l;							// Mesh size in y direcition [m]
+		Lx = batts * t + fins * t_fin;			// Mesh size in x direcition [m] 
+		Ly = l;									// Mesh size in y direcition [m]
 	}
 	else if (type == 3)
 	{
@@ -460,19 +355,8 @@ void set_mesh_problem(int type, int& N, int& Nx, int& Ny, double& Lx, double& Ly
 		Lx = batts * t + fins * t_fin + pcms * t_pcm;	// Mesh size in x direcition [m] 
 		Ly = l;											// Mesh size in y direcition [m]
 	}
-	else if (type == 4)
-	{
-		Lx = cols_batt_mod * t + (cols_batt_mod + 1) * t_fin + (2 * cols_batt_mod) * t_pcm;		// Mesh size in x direcition [m] 
-		Ly = lines_batt_mod * l;																// Mesh size in y direcition [m]
-	}
-	else if (type == 5)
-	{
-		Lx = cols_batt_mod * t + (cols_batt_mod + 1) * t_fin;	// Mesh size in x direcition [m] 
-		Ly = lines_batt_mod * l;								// Mesh size in y direcition [m]
-	}
-
-	Nx = round(Lx / dx);				// Volumes in x direction
-	Ny = round(Ly / dy);				// Volumes in y direction 
+	Nx = (int)(Lx / dx);				// Volumes in x direction
+	Ny = (int)(Ly / dy);				// Volumes in y direction 
 	N = (Nx + 2) * (Ny + 2);			// Total number of CVs. Include ghost elements in boundaries.
 
 	cout << "Mesh length in x direction [m]: " << Lx << endl;
@@ -485,8 +369,9 @@ void set_mesh_problem(int type, int& N, int& Nx, int& Ny, double& Lx, double& Ly
 	cout << "Total number of cells: " << N << endl;
 }
 
-int path(int Nx, int Ny, int* pp, int* ee, int* ww, int* nn, int* ss) 
-{
+
+int path(int Nx, int Ny, int* pp, int* ee, int* ww, int* nn, int* ss) {
+
 	int i, j, l, o, m;
 
 	o = 0;
@@ -516,4 +401,140 @@ int path(int Nx, int Ny, int* pp, int* ee, int* ww, int* nn, int* ss)
 	return o;
 }
 
+void nonlinear_cond(int o, int* pp, int* R, double* f, double* kx, double* ky, double* resk)
+{
+	int j;
+	double res = 0.0, ka;
+	double a = 1.0;
 
+	for (int i = 0; i < o; i++)
+	{
+		if (pp[i] != 0 && R[pp[i]] == 0) // PCM
+		{
+			j = pp[i];
+			ka = kx[j];
+
+			kx[j] = 0.425 * (1 - f[j]) + 0.152 * f[j]; // Conductivity based on liquid fraction
+			ky[j] = kx[j];
+
+			res = res + fabs(kx[j] - ka);
+			if (fabs(kx[j] - ka) > 1.0E-05)
+			{
+				a++;
+			}
+		}
+		else if (pp[i] != 0 && R[pp[i]] == 5) // PCM
+		{
+			j = pp[i];
+			ka = kx[j];
+
+			kx[j] = 31.39 * (1 - f[j]) + 31.15 * f[j]; // Conductivity based on liquid fraction
+			ky[j] = kx[j];
+
+			res = res + fabs(kx[j] - ka);
+			if (fabs(kx[j] - ka) > 1.0E-05)
+			{
+				a++;
+			}
+		}
+	}
+
+	*resk = res / a;
+}
+
+void update_thermal_conductivity(int* R, int o, int* pp, double* f, double* kx, double* ky, double ks_pcm, double kl_pcm, double k_cop, double porosity, double& k_pcm, double& k_cpcm)
+{
+	int i, l;
+
+	for (i = 0; i < o; i++)
+	{
+		if (pp[i] != 0)
+		{
+			l = pp[i];
+			if (R[l] == 0) // PCM Region
+			{
+				k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
+				kx[l] = k_pcm;
+				ky[l] = k_pcm;
+			}
+			else if (R[l] == 5) // CPCM Region
+			{
+				k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
+				k_cpcm = porosity * k_pcm + (1 - porosity) * k_cop;
+				kx[l] = k_cpcm;
+				ky[l] = k_cpcm;
+			}
+		}
+	}
+}
+
+void fluid_temp(int o, int* pp, int N, int Ny, double* T, int* batt_pos, double* T_fluid, double T_cp, double h_cp, double m_dot, double t, double w, double cp_liq, int cols_batt_mod)
+{
+	int i, j, m, l, pos;
+	vector<double> Tave(cols_batt_mod);
+	vector<int> num_cells(cols_batt_mod);
+	vector<double> Tcorner(cols_batt_mod+1);
+
+	// Simulation timer
+	clock_t start, end;
+	start = clock();		// Start timer!
+
+	for (i = 0; i < cols_batt_mod; i++)
+	{
+		Tave[i] = 0.0;
+		num_cells[i] = 0;
+	}
+
+	#pragma omp parallel for shared (Tave, num_cells) private (l, i, j)
+	for (m = 0; m < o; m++)
+	{
+		l = pp[m];
+		i = (int)l / (Ny + 2);
+		j = (int)l - i * (Ny + 2);
+
+		if (j == 1) // Boundary conditions - South
+		{
+			Tave[batt_pos[l]-1] += T[l];
+			num_cells[batt_pos[l] - 1] += 1;
+			//printf("pp = %i \t Batt Pos = %i\t Tave = %5.E\t num_cells = %i\n", l, batt_pos[l], Tave[batt_pos[l] - 1], num_cells[batt_pos[l] - 1]);
+		}
+	}
+
+	for (i = 0; i < cols_batt_mod; i++)
+	{
+		Tave[i] = Tave[i] / num_cells[i];
+		//printf("Batt cell = %i \t Tave = %5.3f\n", i, Tave[i]);
+	}
+
+	for (i = 0; i < (cols_batt_mod+1); i++)
+	{
+		if (i == 0)
+		{
+			Tcorner[i] = T_cp;
+		}
+		else
+		{
+			Tcorner[i] = Tcorner[i - 1] + (((h_cp * 0.12 * t * w) / (m_dot * cp_liq)) * (Tave[i-1] - Tcorner[i - 1]));
+			//Tcorner[i] = Tcorner[i - 1] + (((h_cp * t * w) / (m_dot * cp_liq)) * (Tave[i-1] - Tcorner[i - 1]));
+		}
+		//printf("i = %i\t Tcorner = %5.3f\n", i, Tcorner[i]);
+	}
+
+	#pragma omp parallel for shared (T_fluid) private (l, i, j)
+	for (m = 0; m < o; m++)
+	{
+		l = pp[m];
+		i = (int)l / (Ny + 2);
+		j = (int)l - i * (Ny + 2);
+
+		if (j == 1) // Boundary conditions - South
+		{
+			pos = batt_pos[l];
+			T_fluid[l] = (Tcorner[pos - 1] + Tcorner[pos]) / 2;
+			//printf("i = %i\t Tfluid = %5.3f\n", i, Tcorner[i]);
+		}
+	}
+	end = clock(); // Stop timer!
+	double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
+	//cout << "\nFluid cauculus time: " << time_taken << " s " << endl;
+}

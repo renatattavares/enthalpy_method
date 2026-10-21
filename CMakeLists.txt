@@ -10,9 +10,7 @@ set(SOURCES
     VCM2D.cpp
     Functions/Model.cpp
     Functions/Plots.cpp
-    Functions/ReadData.cpp
     Functions/Solver.cpp
-    Functions/Mission.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
