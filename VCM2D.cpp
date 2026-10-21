@@ -14,7 +14,7 @@ int main() {
 	// -------------------------- MESH SETUP --------------------------- //
 	// Control Volumes
 	double dx = 0.001;			// CV dimension in x direction[m]
-	double dy = 0.001;			// CV dimension in y direction[m]
+	double dy = 0.004;			// CV dimension in y direction[m]
 	int N, Nx, Ny;
 	double Lx, Ly;
 
@@ -118,9 +118,9 @@ int main() {
     }
 
 	// Cold Plate
-	double h_cp = 3000;		// Heat transfer coefficient [W/m².K]
+	double h_cp = 2000;		// Heat transfer coefficient [W/m².K]
 	double T_cp = 15;
-	double m_dot = 0.001;		// Mass flow rate [kg/s]
+	double m_dot = 0.008;		// Mass flow rate [kg/s]
 	double cp_liq = 3285;		// Specific heat of liquid [J/kg.K]
  
 	// Natural Convection
@@ -188,7 +188,6 @@ int main() {
 	}	
 
 	// -------------------------- INITIALIZATION ----------------------- //
-	int i = 0;						// Counter
 	int it = 0;						// Iterations counter
 	double time = 0.0;				// Current time step [s] 
 	bool print_now = true;
