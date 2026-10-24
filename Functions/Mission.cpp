@@ -9,18 +9,8 @@ void get_q_dot(bool& charging_active, double Tinitial, double SOCinit, double ti
 	{
 		if (time >= TotalTime)
 		{
-			for (int i = 0; i < o; i++)
-			{
-				p = pp[i];
-				if (p != 0)
-				{
-					if (T[p] > max_batt_temp && R[p] == 1)
-					{
-						max_batt_temp = T[p];
-					}
-				}
-			}
-			if (max_batt_temp > max_charge_temp || (max_batt_temp > Tinitial && SOC >= SOCinit))
+			double max_batt_temp = get_max_batt_temp(o, pp, T, R);
+			if ((max_batt_temp > max_charge_temp) || (max_batt_temp > Tinitial && SOC >= SOCinit))
 			{
 				for (int j = 0; j < total_cells; j++)
 				{
@@ -212,4 +202,20 @@ void set_mission(double& SimTotalTime, double& TotalTime, int type, bool charge,
     {
         SimTotalTime = TotalTime;
     }
+}
+
+double get_max_batt_temp(int o, int* pp, double* T, int* R)
+{
+	int k;
+	double max_batt_temp = 0.0;
+	
+	for (int i = 0; i < o; i++)
+	{
+		k = pp[i];
+		if (T[k] > max_batt_temp && R[k] == 1)
+		{
+			max_batt_temp = T[k];
+		}	
+	}
+	return max_batt_temp;
 }

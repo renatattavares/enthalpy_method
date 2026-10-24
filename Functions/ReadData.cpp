@@ -10,7 +10,7 @@ void read_data(string filename,
     double& Tn, double& Ts, double& Te, double& Tw,
     double& qn, double& qs, double& qe, double& qw,
     double& rho_bat, double& kx_bat, double& ky_bat, double& cp_bat,
-    double& rho_pcm, double& k_pcm, double& cp_pcm, double& L_pcm, double& Tmelt,
+    double& rho_pcm, double& k_pcm, double& ks_pcm, double& kl_pcm,double& cp_pcm, double& L_pcm, double& Tmelt,
     double& rho_alu, double& k_alu, double& cp_alu,
     double& rho_gra, double& kx_gra, double& ky_gra, double& cp_gra,
     double& rho_cop, double& k_cop, double& cp_cop,
@@ -70,7 +70,9 @@ void read_data(string filename,
 
     auto mp = m["pcm"];
     rho_pcm = mp["rho"].as<double>();
-    k_pcm = mp["k"].as<double>();
+    ks_pcm = mp["ks"].as<double>();
+    kl_pcm = mp["kl"].as<double>();
+    k_pcm = ks_pcm;                     // Initial conductivity is solid phase
     cp_pcm = mp["cp"].as<double>();
     L_pcm = mp["L"].as<double>();
     Tmelt = mp["Tmelt"].as<double>();

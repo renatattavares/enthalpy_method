@@ -331,8 +331,10 @@ void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, in
 			}
 			else if ((type == 4 || type == 5) && cooling_active == true)
 			{
-  				su[l] = su[l] + (h_cp * T_fluid[l]) / dy;
-				sp[l] = sp[l] - (h_cp) / dy;
+				//su[l] = su[l] + (h_cp * T_fluid[l]) / dy;
+				//sp[l] = sp[l] - (h_cp) / dy;
+  				su[l] = su[l] + (h_cp * 0.267 * T_fluid[l]) / dy;
+				sp[l] = sp[l] - (h_cp * 0.267) / dy;
 			}
 		}
 
@@ -413,7 +415,7 @@ void fluid_temp(int o, int* pp, int N, int Ny, double* T, int* batt_pos, double*
 		}
 		else
 		{
-			Tcorner[i] = Tcorner[i - 1] + (((h_cp * t * w) / (m_dot * cp_liq)) * (Tave[i-1] - Tcorner[i - 1]));
+			Tcorner[i] = Tcorner[i - 1] + (((h_cp * 0.267 * t * w) / (m_dot * cp_liq)) * (Tave[i-1] - Tcorner[i - 1]));
 		}
 		//printf("i = %i\t Tcorner = %5.3f\n", i, Tcorner[i]);
 	}
@@ -516,4 +518,28 @@ int path(int Nx, int Ny, int* pp, int* ee, int* ww, int* nn, int* ss)
 	return o;
 }
 
+void update_thermal_conductivity(int* R, int o, int* pp, double* f, double* kx, double* ky, double ks_pcm, double kl_pcm, double k_cop, double porosity, double& k_pcm, double& k_cpcm)
+{
+	int i, l;
 
+	for (i = 0; i < o; i++)
+	{
+		if (pp[i] != 0)
+		{
+			l = pp[i];
+			if (R[l] == 0) // PCM Region
+			{
+				k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
+				kx[l] = k_pcm;
+				ky[l] = k_pcm;
+			}
+			else if (R[l] == 5) // CPCM Region
+			{
+				k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
+				k_cpcm = porosity * k_pcm + (1 - porosity) * k_cop;
+				kx[l] = k_cpcm;
+				ky[l] = k_cpcm;
+			}
+		}
+	}
+}
