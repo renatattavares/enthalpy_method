@@ -7,7 +7,7 @@ void SORt(int o, int* pp, int* ww, int* ee, int* nn, int* ss, double* ap, double
 	double R, T_old;
 	double res = 1.0;
 	double kappa = 1000;
-	double resmax = 1E-6;
+	double resmax = 1E-7;
 
 	while (res > resmax)
 	{
