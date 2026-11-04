@@ -5,7 +5,7 @@ int main() {
 	// ---------------------- SIMULATION SETUP ------------------------- //
 	// Problem type
 	const int type = 3;			// Cylindrical = 1 / Pouch Baseline = 2 / Pouch proposed = 3
-	const int pouch = 1;		// DOUBLE = 1 / PCM  = 2 / CPCM = 3
+	const int pouch = 3;		// DOUBLE = 1 / PCM  = 2 / CPCM = 3
 
 	// Time Setup
 	double TotalTime = 500;		// Total simulation time [s]
@@ -13,8 +13,8 @@ int main() {
 
 	// -------------------------- MESH SETUP --------------------------- //
 	// Control Volumes
-	double dx = 0.001;			// CV dimension in x direction[m]
-	double dy = 0.004;			// CV dimension in y direction[m]
+	double dx = 0.001;		// CV dimension in x direction[m]
+	double dy = 0.001;			// CV dimension in y direction[m]
 	int N, Nx, Ny;
 	double Lx, Ly;
 
@@ -34,7 +34,7 @@ int main() {
 
 	// ----------------- BOUNDARY AND INITIAL CONDITIONS --------------- //
 	// Initial Condition
-	double Tinitial = 25;			// Temperature [�C] in time = 0s
+	double Tinitial = 36;			// Temperature [�C] in time = 0s
 	double Q = 200000;				// W/m�
 
 	// Temperatures for boundary conditions
@@ -64,7 +64,9 @@ int main() {
 	double ks_pcm = 0.425;
 	double kl_pcm = 0.152;
 	double k_pcm = ks_pcm;					// Initial conductivity is solid phase
-	double cp_pcm = 2150.0;
+	double cps_pcm = 2150.0;
+	double cpl_pcm = 2275.0;
+	double cp_pcm = cps_pcm;				// Initial specific heat is solid phase
 	double L_pcm = 247050.0;		
 	double Tmelt = 36.1;			
 
@@ -279,7 +281,7 @@ int main() {
 		}
 		
 		time = time + dt;
-		update_thermal_conductivity(R, o, pp, f, kx, ky, ks_pcm, kl_pcm, k_cop, porosity, k_pcm, k_cpcm);
+		update_thermal_conductivity(R, pouch, o, pp, f, kx, ky, cp, ks_pcm, kl_pcm, k_cop, porosity, k_pcm, k_cpcm, cp_pcm, cp_cpcm, rho_pcm, rho_cpcm, L_pcm, L_cpcm, rho_cop, cp_cop, cps_pcm, cpl_pcm);
 		
 		// Print time step info
 		//log_plot(time, o, pp, R, T, f);

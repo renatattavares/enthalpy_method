@@ -57,7 +57,7 @@ void log_plot(double time, int o, int* pp, int* R, double* T, double* f);
 
 string create_results_folder();
 
-void update_thermal_conductivity(int* R, int o, int* pp, double* f, double* kx, double* ky, double ks_pcm, double kl_pcm, double k_cop, double porosity, double& k_pcm, double& k_cpcm);
+void update_thermal_conductivity(int* R, int pouch, int o, int* pp, double* f, double* kx, double* ky, double* cp, double ks_pcm, double kl_pcm, double k_cop, double porosity, double& k_pcm, double& k_cpcm, double& cp_pcm, double& cp_cpcm, double rho_pcm, double rho_cpcm, double L_pcm, double L_cpcm, double rho_cop, double cp_cop, double cps_pcm, double cpl_pcm);
 
 void fluid_temp(int o, int* pp, int N, int Ny, double* T, int* batt_pos, double* T_fluid, double T_cp, double h_cp, double m_dot, double t, double w, double cp_liq, int cols_batt_mod);
 
