@@ -35,7 +35,8 @@ void read_data(string filename,
     double& Tn, double& Ts, double& Te, double& Tw,
     double& qn, double& qs, double& qe, double& qw,
     double& rho_bat, double& kx_bat, double& ky_bat, double& cp_bat,
-    double& rho_pcm, double& k_pcm, double& ks_pcm, double& kl_pcm, double& cp_pcm, double& L_pcm, double& Tmelt,
+    double& rho_pcm, double& k_pcm, double& ks_pcm, double& kl_pcm, double& cp_pcm, double& cps_pcm, double& cpl_pcm, 
+    double& L_pcm, double& Tmelt,
     double& rho_alu, double& k_alu, double& cp_alu,
     double& rho_gra, double& kx_gra, double& ky_gra, double& cp_gra,
     double& rho_cop, double& k_cop, double& cp_cop,
@@ -88,7 +89,7 @@ void plot_qdot(double time, double SOC, double it, vector<double> variable_q_dot
 
 void set_mission(double& SimTotalTime, double& TotalTime, int type, bool charge, double charge_rate, vector<double>& times, vector<double>& current, double& SOCinit, double cell_capacity);
 
-void update_thermal_conductivity(int* R, int o, int* pp, double* f, double* kx, double* ky, double ks_pcm, double kl_pcm, double k_cop, double porosity, double& k_pcm, double& k_cpcm);
+void update_thermal_conductivity(int* R, int pouch, int o, int* pp, double* f, double* kx, double* ky, double* cp, double ks_pcm, double kl_pcm, double k_cop, double porosity, double& k_pcm, double& k_cpcm, double& cp_pcm, double& cp_cpcm, double rho_pcm, double rho_cpcm, double L_pcm, double L_cpcm, double rho_cop, double cp_cop, double cps_pcm, double cpl_pcm);
 
 string create_results_folder();
 

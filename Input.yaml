@@ -12,8 +12,8 @@ time:
   dt: 0.001             # [s]
 
 mesh:
-  dx: 0.0005             # [m]
-  dy: 0.001             # [m]
+  dx: 0.001             # [m]
+  dy: 0.005             # [m]
 
 battery_geometry:
   # Cylindrical cell - Simulation Type 1
@@ -54,7 +54,8 @@ materials:
     rho: 776            # [kg/m³]
     ks: 0.425           # [W/m.K]
     kl: 0.152           # [W/m.K]
-    cp: 2150            # [J/kg.K]
+    cps: 2150           # [J/kg.K]
+    cpl: 2275           # [J/kg.K]
     L: 247050           # [J/kg]
     Tmelt: 36.1         # [°C]
 

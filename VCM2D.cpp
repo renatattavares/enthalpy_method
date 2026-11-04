@@ -16,7 +16,8 @@ int main()
 	double Tn, Ts, Te, Tw;
 	double qn, qs, qe, qw;
 	double rho_bat, kx_bat, ky_bat, cp_bat;
-	double rho_pcm, k_pcm, ks_pcm, kl_pcm,cp_pcm, L_pcm, Tmelt;
+	double rho_pcm, k_pcm, ks_pcm, kl_pcm, cp_pcm, cps_pcm, cpl_pcm; 
+	double L_pcm, Tmelt;
 	double rho_cpcm, k_cpcm, cp_cpcm, L_cpcm;
 	double rho_alu, k_alu, cp_alu;
 	double rho_gra, kx_gra, ky_gra, cp_gra;
@@ -31,7 +32,7 @@ int main()
 	vector<double> q_dots;
 	vector<double> current;
 	
-	read_data("Input.yaml", type, pouch, TotalTime, dt, dx, dy, D, h, t, l, w, t_fin, t_pcm, Tinitial, Q, Tn, Ts, Te, Tw, qn,  qs, qe,  qw, rho_bat, kx_bat, ky_bat, cp_bat, rho_pcm, k_pcm, ks_pcm, kl_pcm, cp_pcm, L_pcm, Tmelt, rho_alu, k_alu, cp_alu, rho_gra,  kx_gra,  ky_gra, cp_gra, rho_cop,  k_cop,  cp_cop, porosity, h_cp, T_cp, h_air, T_air, rho_cpcm,  k_cpcm,  cp_cpcm, L_cpcm, lines_batt_mod, cols_batt_mod, m_dot, cp_liq, times, q_dots, tr_active, tr_cell, tr_q_dot, tr_time, tr_duration, SOCinit, current, cell_capacity, variable_resistance, charge, charge_rate, max_charge_temp, cooling_mission);
+	read_data("Input.yaml", type, pouch, TotalTime, dt, dx, dy, D, h, t, l, w, t_fin, t_pcm, Tinitial, Q, Tn, Ts, Te, Tw, qn,  qs, qe,  qw, rho_bat, kx_bat, ky_bat, cp_bat, rho_pcm, k_pcm, ks_pcm, kl_pcm, cp_pcm, cps_pcm, cpl_pcm, L_pcm, Tmelt, rho_alu, k_alu, cp_alu, rho_gra,  kx_gra,  ky_gra, cp_gra, rho_cop,  k_cop,  cp_cop, porosity, h_cp, T_cp, h_air, T_air, rho_cpcm,  k_cpcm,  cp_cpcm, L_cpcm, lines_batt_mod, cols_batt_mod, m_dot, cp_liq, times, q_dots, tr_active, tr_cell, tr_q_dot, tr_time, tr_duration, SOCinit, current, cell_capacity, variable_resistance, charge, charge_rate, max_charge_temp, cooling_mission);
 	
 	// --------------------------- INIT SIMULATION DATA ------------------------- //
 	set_mesh_problem(type, N, Nx, Ny, Lx, Ly, dx, dy, t, l, t_fin, t_pcm, lines_batt_mod, cols_batt_mod);
@@ -217,7 +218,7 @@ int main()
 		// ----------------------------------------------------- //
 
 		// ---------- Update PCM thermal conductivity ---------- //		
-		update_thermal_conductivity(R, o, pp, f, kx, ky, ks_pcm, kl_pcm, k_cop, porosity, k_pcm, k_cpcm);
+		update_thermal_conductivity(R, pouch, o, pp, f, kx, ky, cp, ks_pcm, kl_pcm, k_cop, porosity, k_pcm, k_cpcm, cp_pcm, cp_cpcm, rho_pcm, rho_cpcm, L_pcm, L_cpcm, rho_cop, cp_cop, cps_pcm, cpl_pcm);
 		// ----------------------------------------------------- //
 		
 		// --------- Init residue and number of iterations ------//

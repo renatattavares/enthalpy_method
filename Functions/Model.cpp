@@ -522,27 +522,55 @@ int path(int Nx, int Ny, int* pp, int* ee, int* ww, int* nn, int* ss)
 	return o;
 }
 
-void update_thermal_conductivity(int* R, int o, int* pp, double* f, double* kx, double* ky, double ks_pcm, double kl_pcm, double k_cop, double porosity, double& k_pcm, double& k_cpcm)
+void update_thermal_conductivity(int* R, int pouch, int o, int* pp, double* f, double* kx, double* ky, double* cp, double ks_pcm, double kl_pcm, double k_cop, double porosity, double& k_pcm, double& k_cpcm, double& cp_pcm, double& cp_cpcm, double rho_pcm, double rho_cpcm, double L_pcm, double L_cpcm, double rho_cop, double cp_cop, double cps_pcm, double cpl_pcm)
 {
 	int i, l;
-
+	
+	rho_pcm = 776;
 	for (i = 0; i < o; i++)
 	{
 		if (pp[i] != 0)
 		{
 			l = pp[i];
-			if (R[l] == 0) // PCM Region
+
+			if (R[l] == 0 || R[l] == 5) // PCM Region
 			{
-				k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
-				kx[l] = k_pcm;
-				ky[l] = k_pcm;
-			}
-			else if (R[l] == 5) // CPCM Region
-			{
-				k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
-				k_cpcm = porosity * k_pcm + (1 - porosity) * k_cop;
-				kx[l] = k_cpcm;
-				ky[l] = k_cpcm;
+				if (pouch == 1) // Double
+				{
+					k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
+					cp_pcm = cps_pcm * (1 - f[l]) + cpl_pcm * f[l];
+					k_cpcm = porosity * k_pcm + (1 - porosity) * k_cop;
+					cp_cpcm = (porosity * (rho_pcm/ rho_cpcm) * cp_pcm + (1 - porosity) * (rho_cop/ rho_cpcm) * cp_cop);
+				}
+				else if (pouch == 2) // Full PCM
+				{
+					k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
+					cp_pcm = cps_pcm * (1 - f[l]) + cpl_pcm * f[l];
+					k_cpcm = k_pcm;
+					cp_cpcm = cp_pcm;
+				}	
+				else if (pouch == 3) // Full CPCM
+				{
+					k_pcm = ks_pcm * (1 - f[l]) + kl_pcm * f[l];
+					cp_pcm = cps_pcm * (1 - f[l]) + cpl_pcm * f[l];
+					k_cpcm = porosity * k_pcm + (1 - porosity) * k_cop;
+					cp_cpcm = (porosity * (rho_pcm/ rho_cpcm) * cp_pcm + (1 - porosity) * (rho_cop/ rho_cpcm) * cp_cop);
+					k_pcm = k_cpcm;
+					cp_pcm = cp_cpcm;
+				}
+
+				if (R[l] == 0) // PCM Region
+				{
+					kx[l] = k_pcm;
+					ky[l] = k_pcm;
+					cp[l] = cp_pcm;
+				}
+				else if (R[l] == 5) // CPCM Region
+				{
+					kx[l] = k_cpcm;
+					ky[l] = k_cpcm;
+					cp[l] = cp_cpcm;
+				}
 			}
 		}
 	}

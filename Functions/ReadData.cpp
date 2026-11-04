@@ -10,7 +10,8 @@ void read_data(string filename,
     double& Tn, double& Ts, double& Te, double& Tw,
     double& qn, double& qs, double& qe, double& qw,
     double& rho_bat, double& kx_bat, double& ky_bat, double& cp_bat,
-    double& rho_pcm, double& k_pcm, double& ks_pcm, double& kl_pcm,double& cp_pcm, double& L_pcm, double& Tmelt,
+    double& rho_pcm, double& k_pcm, double& ks_pcm, double& kl_pcm, double& cp_pcm, double& cps_pcm, double& cpl_pcm, 
+    double& L_pcm, double& Tmelt,
     double& rho_alu, double& k_alu, double& cp_alu,
     double& rho_gra, double& kx_gra, double& ky_gra, double& cp_gra,
     double& rho_cop, double& k_cop, double& cp_cop,
@@ -72,8 +73,10 @@ void read_data(string filename,
     rho_pcm = mp["rho"].as<double>();
     ks_pcm = mp["ks"].as<double>();
     kl_pcm = mp["kl"].as<double>();
-    k_pcm = ks_pcm;                     // Initial conductivity is solid phase
-    cp_pcm = mp["cp"].as<double>();
+    k_pcm = ks_pcm;                        // Initial conductivity is solid phase
+    cps_pcm = mp["cps"].as<double>();
+    cpl_pcm = mp["cpl"].as<double>();
+    cp_pcm = cps_pcm;                     // Initial specific heat is solid phase
     L_pcm = mp["L"].as<double>();
     Tmelt = mp["Tmelt"].as<double>();
 
