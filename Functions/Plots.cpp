@@ -1,15 +1,30 @@
 #include "..\Headers\Include.h"
 
-void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, int* ee, int* nn, int* ss, int* R, double* kx, double* ky, double* rho, double* cp, double* L, int* batt_pos, string dir) {
+void plot_mesh(int o, int Nx, int Ny, double time, double dx, double dy, int* pp, int* ww, int* ee, int* nn, int* ss, int* R, double* kx, double* ky, double* rho, double* cp, double* L, int* batt_pos, string dir) {
 
 	double rx{}, ry{};
+	struct stat sb;
+	string iteration = to_string(int(time));
+	string filename;
+	string simulation_folder = dir + "\\" + "Mesh";
+
+	// Create Results Folder if it does not exist
+	if (stat(simulation_folder.c_str(), &sb) != 0)
+	{
+		if (_mkdir(simulation_folder.c_str()) != 0)
+		{
+			cout << "Failed to create folder " << simulation_folder << endl;
+		}
+	}
+	
+	// Create filename
+	filename = simulation_folder + "\\" + "MeshPlots" + "_" + iteration + ".vtk";
 
 	cout << "\n_________________________________________________________________________" << endl;
 	cout << "\nWriting data files..." << endl;
-
+	
 	// Build
 	ofstream fout;
-	string filename = dir + "/Properties.vtk";
 	fout.open(filename);
 	fout << "# vtk DataFile Version 2.0" << endl;
 	fout << "Physical Properties plot" << endl;
@@ -53,7 +68,7 @@ void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, in
 		fout << pp[a] << endl;
 	}
 
-	// Write WWs
+	// Write PPs
 	fout << "SCALARS ww int" << endl;
 	fout << "LOOKUP_TABLE ww" << endl;
 
@@ -62,7 +77,7 @@ void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, in
 		fout << ww[pp[a]] << endl;
 	}
 
-	// Write EEs
+	// Write PPs
 	fout << "SCALARS ee int" << endl;
 	fout << "LOOKUP_TABLE ee" << endl;
 
@@ -71,7 +86,7 @@ void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, in
 		fout << ee[pp[a]] << endl;
 	}
 
-	// Write NNs
+	// Write PPs
 	fout << "SCALARS nn int" << endl;
 	fout << "LOOKUP_TABLE nn" << endl;
 
@@ -80,7 +95,7 @@ void plot_mesh(int o, int Nx, int Ny, double dx, double dy, int* pp, int* ww, in
 		fout << nn[pp[a]] << endl;
 	}
 
-	// Write SSs
+	// Write PPs
 	fout << "SCALARS ss int" << endl;
 	fout << "LOOKUP_TABLE ss" << endl;
 

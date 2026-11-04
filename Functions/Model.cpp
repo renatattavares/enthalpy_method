@@ -289,6 +289,7 @@ void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, in
 		// Boundary conditions - West
 		if (i == 1)
 		{
+			aw[l] = 0.0;
 			if (type == 1 || type == 2 || type == 3 || type == 4)
 			{
 				su[l] = su[l] + (h_air * T_air) / dx;
@@ -297,6 +298,7 @@ void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, in
 		}
 		else if (i == Nx) // Boundary conditions - East
 		{
+			ae[l] = 0.0;
 			if (type == 1 || type == 2 || type == 3 || type == 4)
 			{
 				su[l] = su[l] + (h_air * T_air) / dx;
@@ -307,6 +309,7 @@ void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, in
 		// Boundary conditions - North
 		if (j == Ny)
 		{
+			an[l] = 0.0;
 			if (type == 1 || type == 2 || type == 3 || type == 4)
 			{
 				su[l] = su[l] + (h_air * T_air) / dy;
@@ -315,6 +318,7 @@ void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, in
 		}
 		else if (j == 1) // Boundary conditions - South
 		{
+			as[l] = 0.0;
 			if (type == 1)
 			{
 				as[l] = 0.0;

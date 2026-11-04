@@ -105,6 +105,7 @@ int main()
 	int print_every = 10;			// Print every X seconds
 	bool print_now = true;
 	bool cooling_active = false;	// Liquid cooling active
+	bool cooling_gse_active = false;	// GSE cooling active
 	bool charging_active = false;	// Charging has started
 	bool tr_started = false;		// Thermal runaway event has started
 	int const total_cells = lines_batt_mod * cols_batt_mod;
@@ -123,7 +124,7 @@ int main()
 	// Store initial mesh info
 	plot_sim(o, Nx, Ny, dx, dy, pp, T, f, R, time, results);
 	plot_log(time, o, pp, R, T, f, SOC, results);
-	//plot_mesh(o, Nx, Ny, dx, dy, pp, ww, ee, nn, ss, R, kx, ky, rho, cp, L, batt_pos, results);
+	plot_mesh(o, Nx, Ny, time, dx, dy, pp, ww, ee, nn, ss, R, kx, ky, rho, cp, L, batt_pos, results);
 	//plot_coef(o, Nx, Ny, dx, dy, pp, aw, ae, an, as, ap, b, time, results);
 	
 	// Resíduos (SOR, liquid fraction and conductivity)
@@ -186,13 +187,15 @@ int main()
 			cooling_active = true;
 			printf("Liquid cooling activated at %5.3fs\n", time);
 		}
-		else if (cooling_active == false && (time > TotalTime) && (type == 4 || type == 5))
+		//else if (cooling_active == false && (time >= TotalTime) && (type == 4 || type == 5))
+		else if ((cooling_gse_active == false) && (time >= TotalTime) && (type == 4 || type == 5))
 		{
-			cooling_active = true;
     		h_cp = 1358;
     		T_cp = 15;    
     		m_dot = 1.07;
     		cp_liq = 3285; // Considerando 15°C
+			cooling_gse_active = true;
+			cooling_active = true;
 			printf("GSE liquid cooling activated at %5.3fs\n", time);
 		}
 		/*
@@ -277,12 +280,12 @@ int main()
 		// Print time step info
 		plot_log(time, o, pp, R, T, f, SOC, results);
 		//plot_qdot(time, SOC, it, cell_heat_dissipation, T_ave_cell, results);
-		/*		
+				
  		if ((previous_time != int(time)) && (int(time) % print_every == 0))
 		{
 			plot_sim(o, Nx, Ny, dx, dy, pp, T, f, R, time, results);
+			plot_mesh(o, Nx, Ny, time, dx, dy, pp, ww, ee, nn, ss, R, kx, ky, rho, cp, L, batt_pos, results);
 		} 
-		*/
 		if ((previous_time != int(time)) && (int(time) % print_every == 0))
 		{
 			print_now = true;

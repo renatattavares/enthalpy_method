@@ -4,15 +4,15 @@
 # ============================================================
 
 problem:
-  type: 5               # 1 = Cylindrical, 2 = Pouch Baseline, 3 = Pouch Proposed, 4 = Module, 5 = Module with no PCM
-  pouch: 1              # 1 = Double, 2 = PCM, 3 = CPCM
+  type: 4               # 1 = Cylindrical, 2 = Pouch Baseline, 3 = Pouch Proposed, 4 = Module, 5 = Module with no PCM
+  pouch: 2              # 1 = Double, 2 = PCM, 3 = CPCM
 
 time:
   TotalTime: 858        # [s] 
   dt: 0.001             # [s]
 
 mesh:
-  dx: 0.001             # [m]
+  dx: 0.0005             # [m]
   dy: 0.001             # [m]
 
 battery_geometry:
@@ -52,8 +52,9 @@ materials:
 
   pcm:
     rho: 776            # [kg/m³]
-    k: 0.425            # [W/m.K]
-    cp: 2150            # [J/kg.K]    
+    ks: 0.425           # [W/m.K]
+    kl: 0.152           # [W/m.K]
+    cp: 2150            # [J/kg.K]
     L: 247050           # [J/kg]
     Tmelt: 36.1         # [°C]
 
@@ -78,13 +79,13 @@ cpcm:
 
 convection:
   cold_plate:
-    h_cp: 1000          # [W/m².K]
-    T_cp: 25            # [°C]
-    m_dot: 0.40         # [kg/s]
-    cp_liq: 3338        # Considerando 15°C
+    h_cp: 1358          # [W/m².K]
+    T_cp: 15            # [°C]
+    m_dot: 1.07         # [kg/s]
+    cp_liq: 3285        # Considerando 15°C
 
   natural:
-    h_air: 2            # [W/m².K]      
+    h_air: 0            # [W/m².K]      
     T_air: 25           # [°C]
 
 module:
@@ -95,10 +96,10 @@ mission:
     variable_resistance: false
     current: [64.6, 64.6, 37.5, 28.9, 22.5, 61.9, 61.9]           # Cell current per flight phase [A]
     times: [12, 42, 126, 726, 810, 840]                           # [s]
-    #times: [5, 6, 7, 8, 9, 10]                                   # [s]
+    #times: [12, 42, 126, 526, 610, 640]                           # [s]
     SOCinit: 95                                                   # [%]
     cell_capacity: 10000                                          # [mAh]
-    charge: true                                             # If true, the battery is charged at the end of the mission
+    charge: true                                                  # If true, the battery is charged at the end of the mission
     charge_rate: 3                                                # [C-rate]
     max_charge_temp: 45                                           # [°C]
     q_dot: [426264, 426264, 143623, 85208, 51512, 391091, 391091] # Thermal load per flight phase [W/m³]
