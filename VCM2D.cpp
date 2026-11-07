@@ -83,7 +83,7 @@ int main() {
 
 	// Copper
 	double rho_cop = 8978.0;
-	double k_cop = 387.6;
+	double k_cop = 387.6 * 0.35;
 	double cp_cop = 381.0;
 
 	// CPCM - Copper Foam
