@@ -12,8 +12,8 @@ time:
   dt: 0.001             # [s]
 
 mesh:
-  dx: 0.001             # [m]
-  dy: 0.005             # [m]
+  dx: 0.0005             # [m]
+  dy: 0.001             # [m]
 
 battery_geometry:
   # Cylindrical cell - Simulation Type 1
@@ -80,7 +80,7 @@ cpcm:
 
 convection:
   cold_plate:
-    h_cp: 1358          # [W/m².K]
+    h_cp: 1000          # [W/m².K]
     T_cp: 15            # [°C]
     m_dot: 1.07         # [kg/s]
     cp_liq: 3285        # Considerando 15°C
