@@ -313,8 +313,8 @@ void assembly(int o, int* pp, int type, int Nx, int Ny, double dx, double dy, in
 			as[l] = 0;
 			if ((type == 3 && active == true) || (type == 2))
 			{
-				su[l] = su[l] + (h_cp * 0.12 * T_fluid[l]) / dy; //su[l] = su[l] + (h_cp * T_cp) / dy;
-				sp[l] = sp[l] - (h_cp * 0.12) / dy;
+				su[l] = su[l] + (h_cp * 0.38 * T_fluid[l]) / dy; //su[l] = su[l] + (h_cp * T_cp) / dy;
+				sp[l] = sp[l] - (h_cp * 0.38) / dy;
 			}
 		}
 
@@ -541,7 +541,7 @@ void fluid_temp(int o, int* pp, int N, int Ny, double* T, int* batt_pos, double*
 		}
 		else
 		{
-			Tcorner[i] = Tcorner[i - 1] + (((h_cp * 0.12 * t * w) / (m_dot * cp_liq)) * (Tave[i-1] - Tcorner[i - 1]));
+			Tcorner[i] = Tcorner[i - 1] + (((h_cp * 0.38 * t * w) / (m_dot * cp_liq)) * (Tave[i-1] - Tcorner[i - 1]));
 			//Tcorner[i] = Tcorner[i - 1] + (((h_cp * t * w) / (m_dot * cp_liq)) * (Tave[i-1] - Tcorner[i - 1]));
 		}
 		//printf("i = %i\t Tcorner = %5.3f\n", i, Tcorner[i]);

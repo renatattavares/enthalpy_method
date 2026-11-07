@@ -5,7 +5,7 @@ int main() {
 	// ---------------------- SIMULATION SETUP ------------------------- //
 	// Problem type
 	const int type = 3;			// Cylindrical = 1 / Pouch Baseline = 2 / Pouch proposed = 3
-	const int pouch = 3;		// DOUBLE = 1 / PCM  = 2 / CPCM = 3
+	const int pouch = 1;		// DOUBLE = 1 / PCM  = 2 / CPCM = 3
 
 	// Time Setup
 	double TotalTime = 500;		// Total simulation time [s]
@@ -34,7 +34,7 @@ int main() {
 
 	// ----------------- BOUNDARY AND INITIAL CONDITIONS --------------- //
 	// Initial Condition
-	double Tinitial = 36;			// Temperature [�C] in time = 0s
+	double Tinitial = 25;			// Temperature [�C] in time = 0s
 	double Q = 200000;				// W/m�
 
 	// Temperatures for boundary conditions
@@ -120,7 +120,7 @@ int main() {
     }
 
 	// Cold Plate
-	double h_cp = 2000;		// Heat transfer coefficient [W/m².K]
+	double h_cp = 700;		// Heat transfer coefficient [W/m².K]
 	double T_cp = 15;
 	double m_dot = 0.008;		// Mass flow rate [kg/s]
 	double cp_liq = 3285;		// Specific heat of liquid [J/kg.K]
