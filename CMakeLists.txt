@@ -10,7 +10,6 @@ set(SOURCES
     VCM2D.cpp
     Functions/Model.cpp
     Functions/Plots.cpp
-    Functions/ReadData.cpp
     Functions/Solver.cpp
     Functions/Mission.cpp
 )
@@ -25,10 +24,6 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/Results
         ${CMAKE_CURRENT_SOURCE_DIR}/Validation
 )
-
-# yaml-cpp (via vcpkg)
-find_package(yaml-cpp CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp::yaml-cpp)
 
 # Flags MSVC
 if(MSVC)
