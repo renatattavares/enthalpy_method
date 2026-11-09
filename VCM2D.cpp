@@ -129,7 +129,7 @@ int main()
 	//plot_coef(o, Nx, Ny, dx, dy, pp, aw, ae, an, as, ap, b, time, results);
 	
 	// Resíduos (SOR, liquid fraction and conductivity)
-	double resmax = 1.0E-5;
+	double resmax = 1.0E-4;
 	double resf = 1.0;
 
 	set_mission(SimTotalTime, TotalTime, type, charge, charge_rate, times, current, SOCinit, cell_capacity);

@@ -5,7 +5,7 @@
 
 problem:
   type: 4               # 1 = Cylindrical, 2 = Pouch Baseline, 3 = Pouch Proposed, 4 = Module, 5 = Module with no PCM
-  pouch: 2              # 1 = Double, 2 = PCM, 3 = CPCM
+  pouch: 1              # 1 = Double, 2 = PCM, 3 = CPCM
 
 time:
   TotalTime: 858        # [s] 
@@ -72,7 +72,7 @@ materials:
 
   copper:
     rho: 8978           # [kg/m³]
-    k: 387.6            # [W/m.K]
+    k: 135.7            # [W/m.K]
     cp: 381             # [J/kg.K]
 
 cpcm:
