@@ -4,7 +4,7 @@ int main()
 {
 	// ---------------------- SIMULATION SETUP ------------------------- //
 	// Problem type
-	const int type = 4;			// 1 = Cylindrical, 2 = Pouch Baseline, 3 = Pouch Proposed, 4 = Module, 5 = Module with no PCM
+	const int type = 5;			// 1 = Cylindrical, 2 = Pouch Baseline, 3 = Pouch Proposed, 4 = Module, 5 = Module with no PCM
 	const int pouch = 3;		// 1 = Double, 2 = PCM, 3 = CPCM
 
 	// Time Setup
@@ -117,11 +117,11 @@ int main()
         L_pcm = L_cpcm;
     }
 
-	// Cold Plate
-	double h_cp = 1000;		// Heat transfer coefficient [W/m².K]
-	double T_cp = 15;
-	double m_dot = 1.07;		// Mass flow rate [kg/s]
-	double cp_liq = 3285;		// Specific heat of liquid [J/kg.K]
+	// Cold Plate during flight
+	double h_cp = 700;		// Heat transfer coefficient [W/m².K]
+	double T_cp = 30;
+	double m_dot = 0.01;		// Mass flow rate [kg/s]
+	double cp_liq = 3364;		// Specific heat of liquid [J/kg.K]
  
 	// Natural Convection
 	double h_air = 0;
@@ -141,7 +141,7 @@ int main()
 	bool charge = true;
 	double charge_rate = 3.0;	// Charge rate [C-rate]
 	double max_charge_temp = 45;	// Maximum charge temperature [°C]
-	bool cooling_mission = false;
+	bool cooling_mission = true;
 		
 	// Yaml Parameters (Not Used)
 	std::vector<double> q_dots = {426264, 426264, 143623, 85208, 51512, 391091, 391091};
@@ -150,7 +150,7 @@ int main()
 	double tr_time = 0;
 	double tr_duration = 0;
 	double SimTotalTime;
-	
+
 	//read_data("Input.yaml", type, pouch, TotalTime, dt, dx, dy, D, h, t, l, w, t_fin, t_pcm, Tinitial, Q, Tn, Ts, Te, Tw, qn,  qs, qe,  qw, rho_bat, kx_bat, ky_bat, cp_bat, rho_pcm, k_pcm, ks_pcm, kl_pcm, cp_pcm, cps_pcm, cpl_pcm, L_pcm, Tmelt, rho_alu, k_alu, cp_alu, rho_gra,  kx_gra,  ky_gra, cp_gra, rho_cop,  k_cop,  cp_cop, porosity, h_cp, T_cp, h_air, T_air, rho_cpcm,  k_cpcm,  cp_cpcm, L_cpcm, lines_batt_mod, cols_batt_mod, m_dot, cp_liq, times, q_dots, tr_active, tr_cell, tr_q_dot, tr_time, tr_duration, SOCinit, current, cell_capacity, variable_resistance, charge, charge_rate, max_charge_temp, cooling_mission);
 	
 	// --------------------------- INIT SIMULATION DATA ------------------------- //
@@ -310,7 +310,6 @@ int main()
 		//else if (cooling_active == false && (time >= TotalTime) && (type == 4 || type == 5))
 		else if ((cooling_gse_active == false) && (time >= TotalTime) && (type == 4 || type == 5))
 		{
-    		h_cp = 1358;
     		T_cp = 15;    
     		m_dot = 1.07;
     		cp_liq = 3285; // Considerando 15°C
