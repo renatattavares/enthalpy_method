@@ -191,7 +191,6 @@ int main()
 		//else if (cooling_active == false && (time >= TotalTime) && (type == 4 || type == 5))
 		else if ((cooling_gse_active == false) && (time >= TotalTime) && (type == 4 || type == 5))
 		{
-    		h_cp = 1358;
     		T_cp = 15;    
     		m_dot = 1.07;
     		cp_liq = 3285; // Considerando 15°C

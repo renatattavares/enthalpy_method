@@ -81,9 +81,9 @@ cpcm:
 convection:
   cold_plate:
     h_cp: 1000          # [W/m².K]
-    T_cp: 15            # [°C]
-    m_dot: 1.07         # [kg/s]
-    cp_liq: 3285        # Considerando 15°C
+    T_cp: 30            # [°C]
+    m_dot: 0.01         # [kg/s]
+    cp_liq: 3364        # Considerando 30°C
 
   natural:
     h_air: 0            # [W/m².K]      
